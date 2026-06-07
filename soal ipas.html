@@ -1,0 +1,417 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBT IPS Kelas IX</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#eef2f7;
+}
+
+.header{
+background:#0d47a1;
+color:white;
+padding:20px;
+text-align:center;
+box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+
+.container{
+max-width:1100px;
+margin:20px auto;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+
+.identitas{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin-bottom:20px;
+}
+
+.identitas input{
+padding:10px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+.soal{
+margin-bottom:20px;
+padding:15px;
+background:#f8f9fa;
+border-radius:8px;
+border-left:5px solid #1976d2;
+}
+
+.soal p{
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.soal label{
+display:block;
+padding:8px;
+margin:5px 0;
+border-radius:6px;
+cursor:pointer;
+}
+
+.soal label:hover{
+background:#e3f2fd;
+}
+
+button{
+background:#1976d2;
+color:white;
+border:none;
+padding:12px 20px;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+}
+
+button:hover{
+background:#1259a7;
+}
+
+#hasil{
+margin-top:25px;
+padding:20px;
+border-radius:10px;
+background:#f1f8e9;
+display:none;
+}
+
+.benar{
+background:#c8f7c5 !important;
+color:green !important;
+font-weight:bold;
+}
+
+.salah{
+background:#ffcdd2 !important;
+color:red !important;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>ULANGAN HARIAN IPS</h1>
+<h3>Kelas IX</h3>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<div class="identitas">
+<div>
+<label>Nama Siswa</label>
+<input type="text" id="nama">
+</div>
+
+<div>
+<label>Kelas</label>
+<input type="text" id="kelas">
+</div>
+</div>
+
+<form id="quiz"></form>
+
+<button onclick="periksaJawaban()">
+Periksa Jawaban
+</button>
+
+<div id="hasil"></div>
+
+</div>
+
+</div>
+
+<script>
+
+// DATA SOAL + LOGIKA CBT
+const soal = [
+  {
+    pertanyaan:"Aspek ruang dalam geografi berkaitan dengan ....",
+    opsi:["Urutan waktu terjadinya peristiwa","Letak dan lokasi suatu wilayah","Jumlah penduduk","Jenis pekerjaan"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Perpindahan penduduk dari desa ke kota disebut ....",
+    opsi:["Imigrasi","Urbanisasi","Transmigrasi","Emigrasi"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Syarat terjadinya interaksi antarruang adalah ....",
+    opsi:["Keseragaman wilayah","Saling melengkapi antarwilayah","Tidak ada transportasi","Tidak ada komunikasi"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Indonesia terletak di antara Benua Asia dan Australia berdasarkan letak ....",
+    opsi:["Astronomis","Geologis","Geografis","Ekonomis"],
+    jawaban:"C"
+  },
+  {
+    pertanyaan:"Gunung Merapi termasuk bentang alam berupa ....",
+    opsi:["Danau","Sungai","Gunung api","Pantai"],
+    jawaban:"C"
+  },
+  {
+    pertanyaan:"Pergantian musim di Indonesia dipengaruhi oleh ....",
+    opsi:["Angin muson","Gempa bumi","Tsunami","Vulkanisme"],
+    jawaban:"A"
+  },
+  {
+    pertanyaan:"Indonesia berada di garis lintang ....",
+    opsi:["6° LU–11° LS","10° LU–20° LS","20° LU–30° LS","15° LU–25° LS"],
+    jawaban:"A"
+  },
+  {
+    pertanyaan:"Keberagaman suku bangsa di Indonesia merupakan kondisi ....",
+    opsi:["Politik","Sosial budaya","Geologi","Ekonomi dunia"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Contoh kondisi sosial ekonomi adalah ....",
+    opsi:["Curah hujan","Mata pencaharian masyarakat","Gunung api","Iklim"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Kerja sama antara Indonesia dan Jepang termasuk kerja sama ....",
+    opsi:["Regional","Bilateral","Multilateral","Internasional bebas"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"ASEAN merupakan contoh kerja sama ....",
+    opsi:["Bilateral","Regional","Nasional","Lokal"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Syarat utama terjadinya interaksi sosial adalah ....",
+    opsi:["Kontak dan komunikasi","Kekuasaan","Kekayaan","Jabatan"],
+    jawaban:"A"
+  },
+  {
+    pertanyaan:"Kerja sama dalam masyarakat merupakan interaksi sosial yang bersifat ....",
+    opsi:["Disosiatif","Asosiatif","Konflik","Persaingan"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Contoh interaksi sosial disosiatif adalah ....",
+    opsi:["Gotong royong","Musyawarah","Persaingan usaha","Kerja bakti"],
+    jawaban:"C"
+  },
+  {
+    pertanyaan:"Media komunikasi modern adalah ....",
+    opsi:["Surat merpati","Telepon pintar","Kentongan","Asap"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Sosialisasi pertama kali diperoleh seseorang dari ....",
+    opsi:["Sekolah","Keluarga","Teman","Media massa"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Lembaga sosial yang berfungsi memberikan pendidikan adalah ....",
+    opsi:["Keluarga","Sekolah","Pasar","Bank"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Salah satu tujuan lembaga sosial adalah ....",
+    opsi:["Menimbulkan konflik","Mengatur kehidupan masyarakat","Mengurangi penduduk","Menghapus budaya"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Upaya mengatasi kesenjangan sosial ekonomi dapat dilakukan dengan ....",
+    opsi:["Diskriminasi","Pemerataan pembangunan","Monopoli","Korupsi"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Kebutuhan yang harus dipenuhi terlebih dahulu disebut kebutuhan ....",
+    opsi:["Primer","Sekunder","Tersier","Pelengkap"],
+    jawaban:"A"
+  },
+  {
+    pertanyaan:"Kelangkaan terjadi karena ....",
+    opsi:["Kebutuhan terbatas","Alat pemuas kebutuhan tidak terbatas","Kebutuhan tidak terbatas sedangkan alat pemuas terbatas","Semua barang gratis"],
+    jawaban:"C"
+  },
+  {
+    pertanyaan:"Prinsip ekonomi adalah ....",
+    opsi:["Mengeluarkan biaya sebanyak-banyaknya","Mendapat hasil maksimal dengan pengorbanan tertentu","Boros dalam penggunaan barang","Mengurangi produksi"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Kegiatan menghasilkan barang disebut ....",
+    opsi:["Konsumsi","Distribusi","Produksi","Investasi"],
+    jawaban:"C"
+  },
+  {
+    pertanyaan:"Rumah Tangga Konsumen memiliki peran sebagai ....",
+    opsi:["Penghasil barang","Pengguna barang dan jasa","Penyalur barang","Pemerintah"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Faktor yang memengaruhi permintaan adalah ....",
+    opsi:["Selera konsumen","Warna uang","Cuaca saja","Bentuk pasar"],
+    jawaban:"A"
+  },
+  {
+    pertanyaan:"Harga yang terbentuk dari pertemuan permintaan dan penawaran disebut ....",
+    opsi:["Harga pokok","Harga pasar","Harga impor","Harga diskon"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Inflasi adalah ....",
+    opsi:["Penurunan harga terus-menerus","Kenaikan harga secara umum dan terus-menerus","Naiknya produksi","Turunnya permintaan"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Bank Indonesia termasuk lembaga keuangan ....",
+    opsi:["Bank umum","Bank sentral","Bank daerah","Koperasi"],
+    jawaban:"B"
+  },
+  {
+    pertanyaan:"Salah satu fungsi uang adalah sebagai ....",
+    opsi:["Alat tukar","Barang konsumsi","Faktor produksi","Sumber daya alam"],
+    jawaban:"A"
+  },
+  {
+    pertanyaan:"Salah satu upaya pemerintah mencapai kesejahteraan sosial adalah ....",
+    opsi:["Mengurangi lapangan kerja","Meningkatkan pelayanan publik dan bantuan sosial","Menaikkan pengangguran","Mengurangi pendidikan"],
+    jawaban:"B"
+  }
+];
+
+// Acak soal
+soal.sort(() => Math.random() - 0.5);
+
+// Tampilkan soal
+const quiz = document.getElementById("quiz");
+const huruf = ["A","B","C","D"];
+
+soal.forEach((s,index)=>{
+  let html = `
+    <div class="soal">
+      <p>${index+1}. ${s.pertanyaan}</p>
+  `;
+
+  s.opsi.forEach((opsi,i)=>{
+    html += `
+      <label>
+        <input type="radio" name="q${index}" value="${huruf[i]}">
+        ${huruf[i]}. ${opsi}
+      </label>
+    `;
+  });
+
+  html += `</div>`;
+  quiz.innerHTML += html;
+});
+
+function periksaJawaban(){
+  let benar = 0;
+
+  for(let i=0; i<soal.length; i++){
+    let pilihan = document.querySelector(`input[name="q${i}"]:checked`);
+    let semuaPilihan = document.querySelectorAll(`input[name="q${i}"]`);
+
+    semuaPilihan.forEach(p=>{
+      let label = p.parentElement;
+
+      if(p.value === soal[i].jawaban){
+        label.classList.add("benar");
+      }
+
+      if(
+        pilihan &&
+        p.value === pilihan.value &&
+        pilihan.value !== soal[i].jawaban
+      ){
+        label.classList.add("salah");
+      }
+
+      p.disabled = true;
+    });
+
+    if(pilihan && pilihan.value === soal[i].jawaban){
+      benar++;
+    }
+  }
+
+  let salah = soal.length - benar;
+  let nilai = Math.round((benar / soal.length) * 100);
+
+  let predikat = "D";
+  let status = "TIDAK LULUS";
+
+  if(nilai >= 90){
+    predikat = "A";
+    status = "LULUS";
+  }
+  else if(nilai >= 80){
+    predikat = "B";
+    status = "LULUS";
+  }
+  else if(nilai >= 70){
+    predikat = "C";
+    status = "LULUS";
+  }
+
+  let nama = document.getElementById("nama").value || "-";
+  let kelas = document.getElementById("kelas").value || "-";
+
+  document.getElementById("hasil").style.display="block";
+  document.getElementById("hasil").innerHTML = `
+    <h2 style="color:#0d47a1">HASIL ULANGAN IPAS</h2>
+
+    <hr>
+
+    <p><b>Nama :</b> ${nama}</p>
+    <p><b>Kelas :</b> ${kelas}</p>
+
+    <hr>
+
+    <p><b>Jumlah Benar :</b> ${benar}</p>
+    <p><b>Jumlah Salah :</b> ${salah}</p>
+    <p><b>Nilai :</b> ${nilai}</p>
+    <p><b>Predikat :</b> ${predikat}</p>
+    <p><b>Status :</b> ${status}</p>
+
+    <hr>
+
+    <h3 style="color:green">✔ Hijau = Jawaban Benar</h3>
+    <h3 style="color:red">✖ Merah = Jawaban yang Dipilih Salah</h3>
+  `;
+
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: "smooth"
+  });
+}
+
+</script>
+
+</body>
+</html>
